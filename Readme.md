@@ -49,7 +49,7 @@ The **Online Photo Collage Tool** allows users to create customized photo collag
 
 ### **Clone the Repository**  
 ```bash
-git clone https://github.com/Padam7890/online-photo-collage-tool.git
+git clone https://github.com/Padam7890/online-photo-collage-tool
 cd online-photo-collage-tool
 ```
 
