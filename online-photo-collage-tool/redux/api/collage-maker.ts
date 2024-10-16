@@ -8,7 +8,7 @@ export const collageMaker = createApi({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
   }),
   endpoints: (builder) => ({
-    createCollage: builder.mutation<collageMakerResponse,FormValues>({
+    createCollage: builder.mutation<collageMakerResponse,FormData>({
       query: (formData) => ({
         url: "/collage-maker",
         method: "POST",

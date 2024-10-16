@@ -4,7 +4,5 @@ export class CreateCollageMakerDto {
 
     @IsString()
     @IsNotEmpty()
-    colums: string
-
-    
+    columns: string
 }

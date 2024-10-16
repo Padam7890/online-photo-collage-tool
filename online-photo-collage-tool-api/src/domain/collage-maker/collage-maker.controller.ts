@@ -2,22 +2,26 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, Upl
 import { CollageMakerService } from './collage-maker.service';
 import { CreateCollageMakerDto } from './dto/create-collage-maker.dto';
 import { UpdateCollageMakerDto } from './dto/update-collage-maker.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('collage-maker')
 export class CollageMakerController {
   constructor(private readonly collageMakerService: CollageMakerService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('files'))
-  create(
+  @UseInterceptors(FilesInterceptor('files'))
+  async create(
     @Body() createCollageMakerDto: CreateCollageMakerDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
-
   ) {
-      console.log(files);
-      
-    // return this.collageMakerService.create(createCollageMakerDto);
+    const collage = await this.collageMakerService.create(createCollageMakerDto, files);
+    console.log(collage);
+    return {
+      message: 'Collage created successfully.',
+      data:{
+        imageUrl: collage,
+      }
+    }
   }
 
   @Get()
