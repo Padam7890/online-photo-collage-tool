@@ -14,8 +14,8 @@ export class CollageMakerService {
     createCollageMakerDto: CreateCollageMakerDto,
     files: Array<Express.Multer.File>,
   ) {
-    const singleImageWidth = 400; // Fixed width for each image
-    const singleImageHeight = 400; // Fixed height for each image
+    const singleImageWidth = 400; 
+    const singleImageHeight = 400; 
     const totalWidth = singleImageWidth * files.length; // Collage width
     const totalHeight = singleImageHeight; // Collage height (fixed for now)
 
@@ -35,8 +35,9 @@ export class CollageMakerService {
       create: {
         width: totalWidth,
         height: totalHeight,
+        
         channels: 4,
-        background: { r: 255, g: 255, b: 255, alpha: 1 }, // White background
+        background: { r: 255, g: 255, b: 255, alpha: 1 }, 
       },
     })
       .composite(resizedImages)

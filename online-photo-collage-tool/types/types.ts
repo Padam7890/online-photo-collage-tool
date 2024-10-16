@@ -1,11 +1,11 @@
-
-
 export interface collageMakerResponse {
-    collage_url: string;
+  message: string;
+  data: {
+    imageUrl: string;
+  };
 }
 
 export interface collageMakerRequest {
-    files: string[];
-    columns: string;
-
+  files: string[];
+  columns: string;
 }
