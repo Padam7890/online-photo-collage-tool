@@ -19,14 +19,16 @@ export default function Component() {
     useCreateCollageMutation();
   const [files, setFiles] = useState<File[]>([]);
 
+
   const { control, handleSubmit, setValue, watch } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       files: [],
-      columns: "2",
+      columns: 'grid_2x2',
     },
   });
 
+  
   // Watch for column value changes
   const columns = watch("columns");
 
@@ -101,8 +103,17 @@ export default function Component() {
                         setValue("files", []);
                       }}
                     >
-                      <option value="2">2 Columns</option>
-                      <option value="3">3 Columns</option>
+                        {/* "grid_2x2",
+      "horizontal_3",
+      "vertical_stack",
+      "grid_3x3",
+      "polaroid_frame", */}
+                      <option value="grid_2x2">2 Grid 2x2</option>
+                      <option value="horizontal_3">horizontal 3</option>
+                      <option value="vertical_stack">vertical Stack</option>
+                      <option value="grid_3x3">grid 3x3</option>
+                      <option value="polaroid_frame">polaroid_frame</option>
+
                     </select>
                   )}
                 />

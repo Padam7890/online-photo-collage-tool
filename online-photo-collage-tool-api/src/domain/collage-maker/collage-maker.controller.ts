@@ -14,8 +14,8 @@ export class CollageMakerController {
     @Body() createCollageMakerDto: CreateCollageMakerDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
+    console.log(createCollageMakerDto)
     const collage = await this.collageMakerService.create(createCollageMakerDto, files);
-    console.log(collage);
     return {
       message: 'Collage created successfully.',
       data:{

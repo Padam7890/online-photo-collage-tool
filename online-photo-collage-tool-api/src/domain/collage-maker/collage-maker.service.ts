@@ -15,7 +15,7 @@ export class CollageMakerService {
     createCollageMakerDto: CreateCollageMakerDto,
     files: Array<Express.Multer.File>,
   ) {
-    const collageBuffer = await this.collageTemplate.generateCollage(createCollageMakerDto.template_name, files);
+    const collageBuffer = await this.collageTemplate.generateCollage(createCollageMakerDto.columns, files);
     const result = await this.cloudService.uploadImage(collageBuffer);
     const outputPath = result.secure_url;
     return outputPath;
