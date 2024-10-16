@@ -3,6 +3,7 @@ import { join } from 'path';
 import sharp, { Metadata } from 'sharp';
 import { Express } from 'express';
 
+
 @Injectable()
 export class CollageTemplatesService {
   // Function to add a border to an image
@@ -98,7 +99,7 @@ export class CollageTemplatesService {
   private async createPolaroidFrame(
     image: Buffer, // Accept Buffer type for the image
   ): Promise<Buffer> {
-    const frame = sharp(join(__dirname, ".." ,"public", 'polaroid-frame.png'));
+    const frame = sharp(join(__dirname, ".." , "..", "..","public", 'polaroid-frame.png'));
     const photo = sharp(image).resize(300, 300); // Accept Buffer type for photo
     return frame
       .composite([{ input: await photo.toBuffer(), top: 100, left: 50 }])
