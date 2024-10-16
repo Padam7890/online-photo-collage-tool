@@ -9,12 +9,8 @@ import { X } from "lucide-react";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { formSchema } from "@/types/formtype";
 
-// Zod Schema for form validation
-const formSchema = z.object({
-  files: z.array(z.instanceof(File)).max(5, "You can upload up to 5 files"), 
-  columns: z.enum(["2", "3"]).default("2"), 
-});
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -87,7 +83,6 @@ export default function Component() {
               )}
             />
           </div>
-
           {/* File Dropzone */}
           <div
             {...getRootProps()}
