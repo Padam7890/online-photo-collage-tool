@@ -10,12 +10,16 @@ import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema } from "@/types/formtype";
+import { useCreateCollageMutation } from "@/redux/api/collage-maker";
 
 
-type FormValues = z.infer<typeof formSchema>;
+export type FormValues = z.infer<typeof formSchema>;
 
 export default function Component() {
+  const [createCollage] = useCreateCollageMutation();
+
   const [files, setFiles] = useState<File[]>([]);
+
   const { control, handleSubmit, setValue, watch } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,8 +44,8 @@ export default function Component() {
     onDrop,
     accept: { "image/*": [] },
     multiple: true,
-    maxFiles: 5,
-    disabled: files.length >= 5,
+    maxFiles: parseInt(columns),
+    disabled: files.length >= parseInt(columns),
   });
 
   const removeFile = (file: File) => {
@@ -52,6 +56,8 @@ export default function Component() {
 
   const onSubmit = (data: FormValues) => {
     console.log("Form Data:", data);
+    createCollage(data);
+    
   };
 
   return (
