@@ -1,23 +1,23 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { join } from 'path';
-import { Metadata } from 'sharp';
 import * as sharp from 'sharp';
-import { CreateCollageMakerDto } from '../collage-maker/dto/create-collage-maker.dto';
 
 @Injectable()
 export class CollageTemplatesService {
+  constructor() {}
+
   // Function to add a border to an image
-  async addBorderToImage(
+  private async addBorderToImage(
     imageBuffer: Buffer,
-    borderSize: number = 14,
-    borderColor: string = 'green',
+    borderSize: number,
+    borderColor: string,
   ): Promise<Buffer> {
-    const { width, height }: Metadata = await sharp(imageBuffer).metadata();
+    const { width, height } = await sharp(imageBuffer).metadata();
 
     return sharp({
       create: {
-        width: (width || 0) + borderSize * 2,
-        height: (height || 0) + borderSize * 2,
+        width: width + 2 * borderSize,
+        height: height + 2 * borderSize,
         channels: 4,
         background: borderColor,
       },
@@ -27,132 +27,134 @@ export class CollageTemplatesService {
       .toBuffer();
   }
 
-  // Function to ensure images are resized to specific dimensions
-  private async resizeImage(
-    imageBuffer: Buffer,
+  // Function to resize images
+  private async resizeImages(
+    images: Array<Express.Multer.File>,
     width: number,
     height: number,
+  ): Promise<Buffer[]> {
+    return Promise.all(
+      images.map((file) =>
+        sharp(file.buffer)
+          .resize(width, height, { fit: sharp.fit.cover })
+          .toBuffer(),
+      ),
+    );
+  }
+
+  // Function to create a blank canvas
+  private createCanvas(width: number, height: number, background: string) {
+    return sharp({
+      create: {
+        width,
+        height,
+        channels: 4,
+        background,
+      },
+    });
+  }
+
+  // Function to prepare composited images with borders
+  private async prepareImagesWithBorders(
+    images: Buffer[],
+    borderSize: number,
+    borderColor: string,
+  ): Promise<Buffer[]> {
+    return Promise.all(
+      images.map((buffer) =>
+        this.addBorderToImage(buffer, borderSize, borderColor),
+      ),
+    );
+  }
+
+  // Generic collage creation function
+  private async createCollage(
+    images: Array<Express.Multer.File>,
+    canvasWidth: number,
+    canvasHeight: number,
+    borderSize: number,
+    layout: (
+      width: number,
+      height: number,
+    ) => { imageWidth: number; imageHeight: number },
+  ) {
+    const canvas = this.createCanvas(canvasWidth, canvasHeight, 'white');
+    const { imageWidth, imageHeight } = layout(canvasWidth, canvasHeight);
+
+    const resizedImages = await this.resizeImages(
+      images,
+      imageWidth,
+      imageHeight,
+    );
+    const borderedImages = await this.prepareImagesWithBorders(
+      resizedImages,
+      borderSize,
+      'white',
+    );
+
+    const compositedImages = borderedImages.map((buffer, index) => ({
+      input: buffer,
+      top:
+        Math.floor(index / (canvasWidth / (imageWidth + borderSize))) *
+        (imageHeight + borderSize),
+      left:
+        (index % (canvasWidth / (imageWidth + borderSize))) *
+        (imageWidth + borderSize),
+    }));
+
+    return canvas.composite(compositedImages).png().toBuffer();
+  }
+
+  // Layout definitions
+  private layoutGrid2x2(canvasWidth: number, canvasHeight: number) {
+    return {
+      imageWidth: (canvasWidth - 3 * 4) / 2,
+      imageHeight: canvasHeight - 2 * 4,
+    };
+  }
+
+  private layoutHorizontal3(canvasWidth: number, canvasHeight: number) {
+    const imageWidth = Math.floor((canvasWidth - 4 * 4) / 3); 
+    const imageHeight = Math.floor(canvasHeight - 2 * 4); 
+    return { imageWidth, imageHeight };
+  }
+
+  private layoutVerticalStack(canvasWidth: number) {
+    return { imageWidth: canvasWidth, imageHeight: 400 };
+  }
+
+  private layout3x3Grid(canvasWidth: number, canvasHeight: number) {
+    return {
+      imageWidth:  Math.floor((canvasWidth / 3 - 4)),
+      imageHeight: canvasHeight / 2 - 2 * 4,
+    };
+  }
+
+  // Template: Generate collage based on the selected template
+  async generateCollage(
+    templateType: string,
+    files: Array<Express.Multer.File>,
   ): Promise<Buffer> {
-    return sharp(imageBuffer)
-      .resize(width, height, { fit: sharp.fit.cover })
-      .toBuffer();
-  }
-
-  // Template: Grid (2x2)
-  private async createGrid2x2(images: Array<Buffer>): Promise<Buffer> {
-    const canvasSize = 800;
-    const imageSize = canvasSize / 2;
-
-    const borderedImages = await Promise.all(
-      images.map(async (buffer) => {
-        // Resize each image to the desired size minus the border
-        const resizedImage = await this.resizeImage(
-          buffer,
-          imageSize - 20,
-          canvasSize - 20,
+    switch (templateType) {
+      case 'grid_2x2':
+        return this.createCollage(files, 800, 800, 4, this.layoutGrid2x2);
+      case 'horizontal_3':
+        return this.createCollage(files, 1200, 400, 4, this.layoutHorizontal3);
+      case 'vertical_stack':
+        return this.createCollage(
+          files,
+          400,
+          1200,
+          4,
+          this.layoutVerticalStack,
         );
-        // Add border to the resized image
-        return await this.addBorderToImage(resizedImage);
-      }),
-    );
-
-    const canvas = sharp({
-      create: {
-        width: canvasSize,
-        height: canvasSize,
-        channels: 4,
-        background: 'white',
-      },
-    });
-
-    const compositedImages = borderedImages.map((buffer, index) => ({
-      input: buffer,
-      top: Math.floor(index / 2) * imageSize, // 0 or 400
-      left: (index % 2) * imageSize, // 0 or 400
-    }));
-
-    return canvas.composite(compositedImages).png().toBuffer();
-  }
-
-  // Template: Horizontal 3 Images
-  private async createHorizontal3(images: Array<Buffer>): Promise<Buffer> {
-    // Define the canvas dimensions
-    const canvasWidth = 1200;
-    const canvasHeight = 400;
-
-    // Create a blank canvas
-    const canvas = sharp({
-      create: {
-        width: canvasWidth,
-        height: canvasHeight,
-        channels: 4,
-        background: 'white',
-      },
-    });
-
-    // Resize each image to fit within the canvas, assuming each will occupy a third of the width
-    const imageWidth = canvasWidth / 3; // Each image width
-    const resizedImages = await Promise.all(
-      images.map(async (buffer) => {
-        return await sharp(buffer)
-          .resize(imageWidth, canvasHeight, { fit: sharp.fit.cover }) // Resize to fit within allocated space
-          .toBuffer();
-      }),
-    );
-
-    // Prepare compositing positions
-    const compositedImages = resizedImages.map((buffer, index) => ({
-      input: buffer,
-      top: 0, // Align all images at the top
-      left: index * imageWidth, // Distribute images horizontally
-    }));
-
-    // Create and return the final collage image
-    return canvas.composite(compositedImages).png().toBuffer();
-  }
-
-  // Template: Vertical Stack
-  private async createVerticalStack(images: Array<Buffer>): Promise<Buffer> {
-    const canvas = sharp({
-      create: { width: 400, height: 1200, channels: 4, background: 'white' },
-    });
-
-    const borderedImages = await Promise.all(
-      images.map(async (buffer) => {
-        const resizedImage = await this.resizeImage(buffer, 400, 400); // Resize to fit
-        return await this.addBorderToImage(resizedImage); // Add border
-      }),
-    );
-
-    const compositedImages = borderedImages.map((buffer, index) => ({
-      input: buffer,
-      top: index * 400,
-      left: 0,
-    }));
-
-    return canvas.composite(compositedImages).png().toBuffer();
-  }
-
-  // Template: 3x3 Grid
-  private async create3x3Grid(images: Array<Buffer>): Promise<Buffer> {
-    const canvas = sharp({
-      create: { width: 900, height: 900, channels: 4, background: 'white' },
-    });
-
-    const borderedImages = await Promise.all(
-      images.map(async (buffer) => {
-        const resizedImage = await this.resizeImage(buffer, 300, 300); // Resize to fit
-        return await this.addBorderToImage(resizedImage); // Add border
-      }),
-    );
-
-    const compositedImages = borderedImages.map((buffer, index) => ({
-      input: buffer,
-      top: Math.floor(index / 3) * 300,
-      left: (index % 3) * 300,
-    }));
-
-    return canvas.composite(compositedImages).png().toBuffer();
+      case '3x3_grid':
+        return this.createCollage(files, 900, 900, 4, this.layout3x3Grid);
+      case 'polaroid_frame':
+        return this.createPolaroidFrame(files[0].buffer);
+      default:
+        throw new BadRequestException('Invalid template type');
+    }
   }
 
   // Template: Polaroid-like Frame
@@ -160,37 +162,13 @@ export class CollageTemplatesService {
     const frame = sharp(
       join(__dirname, '..', '..', '..', '..', 'public', 'polaroid-frame.png'),
     );
-    const photo = await this.resizeImage(image, 300, 300); // Resize to ensure correct dimension
+    const photo = await sharp(image)
+      .resize(400, 400, { fit: sharp.fit.cover })
+      .toBuffer();
+
     return frame
-      .composite([{ input: photo, top: 100, left: 50 }])
+      .composite([{ input: photo, top: 60, left: 200 }])
       .png()
       .toBuffer();
-  }
-
-  // Generate collage based on the selected template
-  async generateCollage(
-    templateType: string,
-    files: Array<Express.Multer.File>,
-  ): Promise<Buffer> {
-    const borderedImages = await Promise.all(
-      files.map((file) => this.addBorderToImage(file.buffer)), // Pass file.buffer
-    );
-
-    const convertOSTring = templateType.toString();
-    console.log(convertOSTring);
-    switch (convertOSTring) {
-      case 'grid_2x2':
-        return this.createGrid2x2(borderedImages);
-      case 'horizontal_3':
-        return this.createHorizontal3(borderedImages);
-      case 'vertical_stack':
-        return this.createVerticalStack(borderedImages);
-      case '3x3_grid':
-        return this.create3x3Grid(borderedImages);
-      case 'polaroid_frame':
-        return this.createPolaroidFrame(borderedImages[0]);
-      default:
-        throw new BadRequestException('Invalid template type');
-    }
   }
 }

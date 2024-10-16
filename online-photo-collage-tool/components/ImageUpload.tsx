@@ -34,7 +34,7 @@ export default function Component() {
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const newFiles = [...files, ...acceptedFiles].slice(0, 5); // Limit to 5 files
+      const newFiles = [...files, ...acceptedFiles].slice(0, 7); 
       setFiles(newFiles);
       setValue("files", newFiles);
     },
@@ -45,8 +45,8 @@ export default function Component() {
     onDrop,
     accept: { "image/*": [] },
     multiple: true,
-    maxFiles: parseInt(columns),
-    disabled: files.length >= parseInt(columns),
+    maxFiles: 6,
+    disabled: files.length >= 7,
   });
 
   const removeFile = (file: File) => {
@@ -103,15 +103,10 @@ export default function Component() {
                         setValue("files", []);
                       }}
                     >
-                        {/* "grid_2x2",
-      "horizontal_3",
-      "vertical_stack",
-      "grid_3x3",
-      "polaroid_frame", */}
                       <option value="grid_2x2">2 Grid 2x2</option>
                       <option value="horizontal_3">horizontal 3</option>
                       <option value="vertical_stack">vertical Stack</option>
-                      <option value="grid_3x3">grid 3x3</option>
+                      <option value="3x3_grid">grid 3x3</option>
                       <option value="polaroid_frame">polaroid_frame</option>
 
                     </select>
