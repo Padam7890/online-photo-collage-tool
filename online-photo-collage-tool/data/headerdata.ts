@@ -18,7 +18,6 @@ export const navMenuItems = [
 ];
 
 export const headerCTAButton = {
-  color: "black",
   text: "Try It Now",
 };
 

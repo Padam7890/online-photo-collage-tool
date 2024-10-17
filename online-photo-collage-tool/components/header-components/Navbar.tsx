@@ -28,7 +28,7 @@ const Navbar = () => {
         {/* CTA Button */}
         <Button
           type="button"
-          className={`hidden md:block font-medium bg-${headerCTAButton.color}`}
+          className={`hidden md:block font-medium `}
         >
           {headerCTAButton.text}
         </Button>
@@ -59,7 +59,7 @@ const Navbar = () => {
           </ul>
           <Button
             type="button"
-            className={`w-full font-medium bg-${headerCTAButton.color}`}
+            className={`w-full font-medium `}
             onClick={toggleMenu}
           >
             {headerCTAButton.text}
