@@ -1,6 +1,11 @@
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 
 body {
   font-family: Arial, Helvetica, sans-serif;
@@ -76,3 +81,132 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer base {
+  section {
+    @apply py-4 px-4  lg:px-20;
+  }
+
+  section.bg-primary {
+    @apply bg-indigo-600 text-white; /* Example background for primary sections */
+  }
+
+  section.bg-secondary {
+    @apply bg-gray-100 text-gray-800; /* Background for secondary sections */
+  }
+
+  section > h2 {
+    @apply text-3xl font-bold mb-6 text-center md:text-left; /* Consistent heading style */
+  }
+
+  section > p {
+    @apply text-lg leading-relaxed text-center md:text-left max-w-2xl mx-auto mb-8; 
+  }
+
+  section.flex-center {
+    @apply flex justify-center items-center; /* Centered layout */
+  }
+
+  section.grid-cols {
+    @apply grid gap-8 md:grid-cols-2 lg:grid-cols-3; /* Grid layout for cards, features */
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition-all;
+  }
+
+  .btn-secondary {
+    @apply border border-gray-300 text-gray-700 py-2 px-5 rounded-lg hover:bg-gray-100 transition-all;
+  }
+}
+
+/* For Chrome, Safari, and other WebKit browsers */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* For Firefox */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+/* For Internet Explorer, Edge */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+}
+
+
+.container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+ 
+}
+
+@media (min-width: 840px) {
+  .container {
+    max-width: 810px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 940px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1000px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1290px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1400px;
+  }
+}
+.navlink {
+  display: inline-block;
+}
+
+.navlink::after {
+  content: '';
+  width: 0px;
+  height: 10%;
+  display: block;
+  background: #e53b3a;
+  transition: width .3s ease;
+}
+
+.navlink.active::after {
+  width: 100%;
+}
+
+.navlink:hover::after {
+  width: 100%;
+}
+
