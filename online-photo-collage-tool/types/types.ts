@@ -17,3 +17,14 @@ export interface collageMakerRequest {
   columns: CollageTemplateType;
 }
 
+export interface NavigationmenuOptions {
+  navmenuItems:MenuItems[]
+}
+ interface MenuItems {
+  title: string;
+  url: string;
+}
+
+
+
+
