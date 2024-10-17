@@ -80,6 +80,7 @@ export default function Component() {
 
   return (
     <>
+    <section className="container h-screen">
       <div className=" flex flex-col justify-center items-center mb-10">
         <form onSubmit={handleSubmit(onSubmit)}>
           <Card className="w-full max-w-3xl mx-auto flex justify-center flex-col">
@@ -196,6 +197,7 @@ export default function Component() {
           )}
         </div>
       </div>
+      </section>
     </>
   );
 }

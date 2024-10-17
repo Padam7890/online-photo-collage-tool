@@ -13,6 +13,9 @@ const config: Config = {
 			poopins:"Poppins"
 
 		},
+		dropShadow: {
+			orange: "0 4px 15px rgba(255, 165, 0, 0.5)", // Custom orange shadow
+		  },
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
