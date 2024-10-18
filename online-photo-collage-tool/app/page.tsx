@@ -1,7 +1,7 @@
 "use client";
+import FilterComponents from "@/components/filter-components/FilterComponents";
 import { Header } from "@/components/header-components/Header";
 import HeroSection from "@/components/herosec-components/Herosection";
-import DragDropUploader from "@/components/ImageUpload";
 import { store } from "@/redux/store";
 import Image from "next/image";
 import { Provider } from "react-redux";
@@ -12,7 +12,7 @@ export default function Home() {
       <Header />
       <HeroSection/>
       <Provider store={store}>
-        <DragDropUploader />
+        <FilterComponents />
       </Provider>
     </div>
   );

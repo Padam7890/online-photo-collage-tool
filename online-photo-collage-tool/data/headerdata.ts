@@ -6,17 +6,14 @@ export const navMenuItems = [
     url: "#",
   },
   {
-    title: "About",
+    title: "Background Remover",
     url: "#",
   },
   {
-    title: "Contact",
+    title: "Linkedin Slide Maker",
     url: "#",
   },
-  {
-    title: "Terms",
-    url: "#",
-  },
+
 ];
 
 export const headerCTAButton = {
