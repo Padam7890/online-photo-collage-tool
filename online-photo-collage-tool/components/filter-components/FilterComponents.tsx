@@ -14,6 +14,7 @@ import { useCreateCollageMutation } from "@/redux/api/collage-maker";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import FilterSlider from "./FilterSlider";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -81,15 +82,11 @@ export default function FilterComponents() {
     }
   };
 
-  useGSAP(() => {
-    //bacground body color change
-    const introTl = gsap.timeline();
-   
-  }, []);
 
   return (
     <>
-      <section className="filter-container">
+      <section className="filter-container bg-[#f9dcc42d]">
+        <FilterSlider/>
         <div className=" container h-screen  flex flex-col justify-center items-center mb-10">
           <form onSubmit={handleSubmit(onSubmit)}>
             <Card className="w-full max-w-3xl mx-auto flex justify-center flex-col">
