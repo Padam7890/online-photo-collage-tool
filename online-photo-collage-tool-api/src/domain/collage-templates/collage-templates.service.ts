@@ -114,8 +114,8 @@ export class CollageTemplatesService {
   }
 
   private layoutHorizontal3(canvasWidth: number, canvasHeight: number) {
-    const imageWidth = Math.floor((canvasWidth - 4 * 4) / 3); 
-    const imageHeight = Math.floor(canvasHeight - 2 * 4); 
+    const imageWidth = Math.floor((canvasWidth - 4 * 4) / 3);
+    const imageHeight = Math.floor(canvasHeight - 2 * 4);
     return { imageWidth, imageHeight };
   }
 
@@ -123,9 +123,28 @@ export class CollageTemplatesService {
     return { imageWidth: canvasWidth, imageHeight: 400 };
   }
 
+  private gausasainFilter(canvasWidth: number, canvasHeight: number) {
+    const radius = Math.min(canvasWidth, canvasHeight) / 2;
+    const centerX = canvasWidth / 2;
+    const centerY = canvasHeight / 2;
+    const gaussianBlurFilter = sharp({
+      create: {
+        width: centerX,
+        height: centerY,
+        channels: 4,
+        background: { r: 255, g: 255, b: 255, alpha: 0 },
+        noise: {
+          type: 'gaussian',
+          sigma: radius / 4,
+        },
+      },
+    });
+    return gaussianBlurFilter.png().toBuffer();
+  }
+
   private layout3x3Grid(canvasWidth: number, canvasHeight: number) {
     return {
-      imageWidth:  Math.floor((canvasWidth / 3 - 4)),
+      imageWidth: Math.floor(canvasWidth / 3 - 4),
       imageHeight: canvasHeight / 2 - 2 * 4,
     };
   }
@@ -152,6 +171,8 @@ export class CollageTemplatesService {
         return this.createCollage(files, 900, 900, 4, this.layout3x3Grid);
       case 'polaroid_frame':
         return this.createPolaroidFrame(files[0].buffer);
+      case 'gaussian_blur':
+        return this.gausasainFilter(800, 800);
       default:
         throw new BadRequestException('Invalid template type');
     }

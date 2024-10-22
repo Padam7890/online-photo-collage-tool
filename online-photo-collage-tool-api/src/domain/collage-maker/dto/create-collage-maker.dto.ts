@@ -7,6 +7,7 @@ export enum CollageTemplateType {
   VERTICAL_STACK = "vertical_stack",
   GRID_3X3 = "grid_3x3",
   POLAROID_FRAME = "polaroid_frame",
+  GAUSSAIN_BLUR= "gaussian_blur"
 }
 
 // Create a DTO class for creating a collage maker

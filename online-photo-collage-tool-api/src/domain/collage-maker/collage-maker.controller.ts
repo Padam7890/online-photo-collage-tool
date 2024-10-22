@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+  UploadedFiles,
+} from '@nestjs/common';
 import { CollageMakerService } from './collage-maker.service';
 import { CreateCollageMakerDto } from './dto/create-collage-maker.dto';
 import { UpdateCollageMakerDto } from './dto/update-collage-maker.dto';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('collage-maker')
 export class CollageMakerController {
@@ -14,14 +24,17 @@ export class CollageMakerController {
     @Body() createCollageMakerDto: CreateCollageMakerDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
-    console.log(createCollageMakerDto)
-    const collage = await this.collageMakerService.create(createCollageMakerDto, files);
+    console.log(createCollageMakerDto);
+    const collage = await this.collageMakerService.create(
+      createCollageMakerDto,
+      files,
+    );
     return {
       message: 'Collage created successfully.',
-      data:{
+      data: {
         imageUrl: collage,
-      }
-    }
+      },
+    };
   }
 
   @Get()
@@ -35,7 +48,10 @@ export class CollageMakerController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCollageMakerDto: UpdateCollageMakerDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCollageMakerDto: UpdateCollageMakerDto,
+  ) {
     return this.collageMakerService.update(+id, updateCollageMakerDto);
   }
 
