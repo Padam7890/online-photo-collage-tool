@@ -5,7 +5,7 @@ const FilterSlider = () => {
   return (
     <section>
         <div className='container'>
-        Filter slider implementing Soon!
+        Filter slider implementing Soon!coming soon
 
         </div>
     </section>
